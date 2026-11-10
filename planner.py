@@ -6,17 +6,26 @@ with open("data/exercises.json", encoding="utf-8") as file:
 
 print("Number of exercises:", len(exercises))
 
-def find_exercises(level, condition):
+def find_exercises(level, conditions):
     results = []
     for exercise in exercises:
-        if exercise["level"] == level and condition not in exercise["contraindications"]:
+        if exercise["level"] != level:
+            continue
+        
+        is_safe = True
+        for condition in conditions:
+            if condition in exercise["contraindications"]:
+                is_safe = False
+                break
+        if is_safe:
             results.append(exercise)
     return results
 
 level = "beginner"
-condition = "knee_injury"
+conditions = ["knee_injury", "pregnancy"]
 
-safe_exercises = find_exercises(level, condition)
+safe_exercises = find_exercises(level, conditions)
+print("Matching exercises:", len(safe_exercises))
 
 exercise_list = ""
 for exercise in safe_exercises:
@@ -25,7 +34,7 @@ for exercise in safe_exercises:
 prompt = f"""
 You are an experienced Pilates reformer instructor.
 
-Build a {level} level reformer class for a client with this condition: {condition}.
+Build a {level} level reformer class for a client with these conditions: {", ".join(conditions)}.
 
 Use ONLY exercises from this list. Do not add any exercise that is not on the list:
 {exercise_list}
@@ -43,5 +52,5 @@ Write the cues in natural, simple Hebrew, the way an Israeli Pilates instructor 
 Write the exercise names in English and everything else in Hebrew.
 """
 
-lesson = ask_ai(prompt)
-print(lesson)
+#lesson = ask_ai(prompt)
+#print(lesson)
