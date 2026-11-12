@@ -8,13 +8,6 @@ config = types.GenerateContentConfig(
     automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
 )
 
-request = "Build a 50 minute beginner reformer class for a pregnant client."
-
-response = client.models.generate_content(
-    model=MODELS[0],
-    contents=request,
-    config=config,
-)
 TOOLS = {
     "find_exercises": find_exercises,
     "get_exercise_details": get_exercise_details,
