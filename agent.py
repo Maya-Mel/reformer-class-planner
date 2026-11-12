@@ -15,9 +15,13 @@ Rules for using the tools:
 
 Class requirements:
 - Total length: 50 minutes.
-- About 15 exercises, around 10 repetitions each.
+- About 18 exercises, around 10 repetitions each.
 - Start with a Footwork warm-up and end with Stretching.
-- Cover the whole body: core, arms, glutes, and legs in straps.
+- The class MUST include all of these (check the body_focus field of each exercise):
+  - at least 4 exercises for core
+  - at least 3 exercises for glutes
+  - at least 4 exercises for arms
+  - at least 3 exercises from the Leg Series (legs in straps)
 - Keep exercises from the same series together, in a logical order.
 
 For each exercise write: name, springs, repetitions, and one short cue for the instructor.
