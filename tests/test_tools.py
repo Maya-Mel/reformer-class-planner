@@ -117,3 +117,7 @@ def test_levels_and_conditions_are_known():
 def test_find_exercises_rejects_unknown_condition():
     with pytest.raises(ValueError):
         find_exercises("beginner", ["knee injury"])
+
+def test_check_class_safety_rejects_unknown_condition():
+    with pytest.raises(ValueError):
+        check_class_safety(["hundred"], ["knee injury"])

@@ -8,7 +8,11 @@ KNOWN_CONDITIONS = [
     "knee_injury", "lower_back_pain", "neck_injury", "osteoporosis",
     "pregnancy", "shoulder_injury", "wrist_injury",
 ]
-
+def validate_conditions(conditions):
+    for condition in conditions:
+        if condition not in KNOWN_CONDITIONS:
+            raise ValueError(f"Unknown condition: {condition}.")
+    
 def find_exercises(level: str, conditions: list[str]) -> list[dict]:
     """Find reformer exercises that match a level and are safe for the client's conditions.
 
@@ -17,9 +21,7 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
         conditions: The client's contraindications, for example ["pregnancy", "knee_injury"].
             Use an empty list if there are none.
     """
-    for condition in conditions:
-        if condition not in KNOWN_CONDITIONS:
-            raise ValueError(f"Unknown condition: {condition}.")
+    validate_conditions(conditions)
     results = []
     for exercise in exercises:
         if exercise["level"] != level:
@@ -56,6 +58,7 @@ def check_class_safety(exercise_ids: list[str], conditions: list[str]) -> list[s
     Returns:
         A list of problems. An empty list means the class is safe.
     """
+    validate_conditions(conditions)
     problems = []
     for exercise_id in exercise_ids:
         exercise = get_exercise_details(exercise_id)
