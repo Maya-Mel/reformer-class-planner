@@ -3,6 +3,12 @@ import json
 with open("data/exercises.json", encoding="utf-8") as file:
     exercises = json.load(file)
 
+KNOWN_CONDITIONS = [
+    "achilles_injury", "elbow_injury", "high_blood_pressure", "hip_injury",
+    "knee_injury", "lower_back_pain", "neck_injury", "osteoporosis",
+    "pregnancy", "shoulder_injury", "wrist_injury",
+]
+
 def find_exercises(level: str, conditions: list[str]) -> list[dict]:
     """Find reformer exercises that match a level and are safe for the client's conditions.
 
@@ -11,6 +17,9 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
         conditions: The client's contraindications, for example ["pregnancy", "knee_injury"].
             Use an empty list if there are none.
     """
+    for condition in conditions:
+        if condition not in KNOWN_CONDITIONS:
+            raise ValueError(f"Unknown condition: {condition}.")
     results = []
     for exercise in exercises:
         if exercise["level"] != level:
@@ -24,6 +33,7 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
         if is_safe:
             results.append(exercise)
     return results
+
 
 def get_exercise_details(exercise_id: str) -> dict | None:
     """Return the details of a reformer exercise by its ID. If not found, return None.
