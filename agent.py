@@ -60,7 +60,11 @@ def run_agent(request: str) -> str:
         for call in response.function_calls:
             print(f"Step {step + 1}: {call.name}({call.args})")
             function = TOOLS[call.name]
-            result = function(**call.args)
+            try:
+                result = function(**call.args)
+            except ValueError as e:
+                print(f"  Tool error: {e}")
+                result = {"error": str(e)}
             results.append(
                 types.Part.from_function_response(name=call.name, response={"result": result})
             )
@@ -70,5 +74,5 @@ def run_agent(request: str) -> str:
 
 
 if __name__ == "__main__":
-    request = "Build a 50 minute beginner reformer class for a pregnant client."
+    request = "Build a 50 minute Beginner class for a client with a knee injury and a sore lower back."
     print(run_agent(request))

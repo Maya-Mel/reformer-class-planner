@@ -14,7 +14,7 @@ KNOWN_LEVELS = ["beginner", "intermediate", "advanced"]
 def validate_conditions(conditions):
     for condition in conditions:
         if condition not in KNOWN_CONDITIONS:
-            raise ValueError(f"Unknown condition: {condition}.")
+            raise ValueError(f"Unknown condition: {condition}. Use one of: {', '.join(KNOWN_CONDITIONS)}")
     
 def find_exercises(level: str, conditions: list[str]) -> list[dict]:
     """Find reformer exercises that match a level and are safe for the client's conditions.
@@ -25,7 +25,7 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
             Use an empty list if there are none.
     """
     if level not in KNOWN_LEVELS:
-        raise ValueError(f"Unknown level: {level}.")
+        raise ValueError(f"Unknown level: {level}.Use one of: {', '.join(KNOWN_LEVELS)}")
     validate_conditions(conditions)
     results = []
     for exercise in exercises:
