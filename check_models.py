@@ -21,3 +21,5 @@ for model in models_to_try:
         print("OK   ", model, "->", response.text.strip())
     except Exception as error:
         print("FAIL ", model, "->", str(error)[:80])
+
+

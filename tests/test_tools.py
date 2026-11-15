@@ -1,5 +1,5 @@
 from tools import exercises, find_exercises, get_exercise_details, check_class_safety
-
+import pytest
 
 def test_find_exercises_returns_only_requested_level():
     results = find_exercises("beginner", [])
@@ -112,3 +112,8 @@ def test_levels_and_conditions_are_known():
         assert exercise["level"] in KNOWN_LEVELS, exercise["id"]
         for condition in exercise["contraindications"]:
             assert condition in KNOWN_CONDITIONS, f"{exercise['id']}: {condition}"
+
+
+def test_find_exercises_rejects_unknown_condition():
+    with pytest.raises(ValueError):
+        find_exercises("beginner", ["knee injury"])

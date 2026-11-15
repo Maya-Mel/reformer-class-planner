@@ -74,7 +74,7 @@ tools.py              The agent's tools
 agent.py              The agent loop with function calling and system instructions
 ai_client.py          Gemini client with timeout and model fallback
 planner.py            A simple pipeline version (code filters exercises, AI writes the class), kept for comparison
-test_models.py        Checks which Gemini models are currently available
+check_models.py       Checks which Gemini models are currently available
 ```
 
 ## Running it

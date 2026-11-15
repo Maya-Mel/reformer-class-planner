@@ -20,7 +20,7 @@ You need a `.env` file in the repo root that contains `GEMINI_API_KEY=...`. It i
 
 - `python agent.py`: runs the agent on the sample request in its `__main__` block.
 - `python ai_client.py`: a smoke test of the Gemini client.
-- `python test_models.py`: shows which Gemini models currently respond. This is a manual check, not a test suite.
+- `python check_models.py`: shows which Gemini models currently respond. It sends real requests to Gemini. It is a manual check, and its name doesn't start with `test_` so that pytest doesn't collect it.
 - `python planner.py`: runs the older pipeline version. Its AI call is commented out.
 
 Tests use pytest and live in `tests/`. Run them from the repo root with the venv active:
