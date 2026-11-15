@@ -101,9 +101,15 @@ Run the agent:
 python agent.py
 ```
 
+Run the tests. They check the tools and the exercise data, and they don't need an API key:
+
+```bash
+python -m pytest
+```
+
 ## Tech stack
 
-Python, Google Gemini API (`google-genai`), function calling, python-dotenv, Git and GitHub.
+Python, Google Gemini API (`google-genai`), function calling, python-dotenv, pytest, Git and GitHub.
 
 ## Roadmap
 

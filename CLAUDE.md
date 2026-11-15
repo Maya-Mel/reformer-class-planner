@@ -23,7 +23,14 @@ You need a `.env` file in the repo root that contains `GEMINI_API_KEY=...`. It i
 - `python test_models.py`: shows which Gemini models currently respond. This is a manual check, not a test suite.
 - `python planner.py`: runs the older pipeline version. Its AI call is commented out.
 
-The project has no test framework, linter or build step. Run every script from the repo root, because `tools.py` opens `data/exercises.json` with a relative path.
+Tests use pytest and live in `tests/`. Run them from the repo root with the venv active:
+
+- `python -m pytest`: runs all the tests.
+- `python -m pytest tests/test_tools.py::test_exercise_ids_are_unique`: runs a single test.
+
+The tests don't call Gemini. `tests/test_tools.py` tests the tools and also checks `data/exercises.json`. Its `KNOWN_CONDITIONS` list is the approved contraindication vocabulary. When a new condition is added to the data, it must also be added to that list, or the test fails.
+
+There is no linter or build step. Run every script and the tests from the repo root, because `tools.py` opens `data/exercises.json` with a relative path.
 
 ## Architecture
 
