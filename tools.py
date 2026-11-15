@@ -8,6 +8,9 @@ KNOWN_CONDITIONS = [
     "knee_injury", "lower_back_pain", "neck_injury", "osteoporosis",
     "pregnancy", "shoulder_injury", "wrist_injury",
 ]
+
+KNOWN_LEVELS = ["beginner", "intermediate", "advanced"]
+
 def validate_conditions(conditions):
     for condition in conditions:
         if condition not in KNOWN_CONDITIONS:
@@ -21,6 +24,8 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
         conditions: The client's contraindications, for example ["pregnancy", "knee_injury"].
             Use an empty list if there are none.
     """
+    if level not in KNOWN_LEVELS:
+        raise ValueError(f"Unknown level: {level}.")
     validate_conditions(conditions)
     results = []
     for exercise in exercises:

@@ -121,3 +121,7 @@ def test_find_exercises_rejects_unknown_condition():
 def test_check_class_safety_rejects_unknown_condition():
     with pytest.raises(ValueError):
         check_class_safety(["hundred"], ["knee injury"])
+
+def test_find_exercises_rejects_unknown_level():
+    with pytest.raises(ValueError):
+        find_exercises("Beginner", [])
