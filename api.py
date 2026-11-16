@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from tools import KNOWN_LEVELS, validate_conditions
 from pydantic import BaseModel
 from agent import run_agent
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -12,7 +13,7 @@ class ClassRequest(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Reformer Class Planner is running!"}
+    return FileResponse("static/index.html")
 
 @app.post("/class")
 def build_class(class_request: ClassRequest):
