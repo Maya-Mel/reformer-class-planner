@@ -113,6 +113,13 @@ def test_levels_and_conditions_are_known():
         for condition in exercise["contraindications"]:
             assert condition in KNOWN_CONDITIONS, f"{exercise['id']}: {condition}"
 
+def test_known_conditions_match_tools():
+    import tools
+    only_in_tests = set(KNOWN_CONDITIONS) - set(tools.KNOWN_CONDITIONS)
+    only_in_tools = set(tools.KNOWN_CONDITIONS) - set(KNOWN_CONDITIONS)
+    assert only_in_tests == set(), f"Missing in tools.py: {only_in_tests}"
+    assert only_in_tools == set(), f"Missing in tests: {only_in_tools}"
+
 
 def test_find_exercises_rejects_unknown_condition():
     with pytest.raises(ValueError):

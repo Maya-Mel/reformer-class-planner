@@ -25,7 +25,7 @@ def find_exercises(level: str, conditions: list[str]) -> list[dict]:
             Use an empty list if there are none.
     """
     if level not in KNOWN_LEVELS:
-        raise ValueError(f"Unknown level: {level}.Use one of: {', '.join(KNOWN_LEVELS)}")
+        raise ValueError(f"Unknown level: {level}. Use one of: {', '.join(KNOWN_LEVELS)}")
     validate_conditions(conditions)
     results = []
     for exercise in exercises:
