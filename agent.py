@@ -34,7 +34,7 @@ config = types.GenerateContentConfig(
     system_instruction=SYSTEM_INSTRUCTION,
     tools=[find_exercises, get_exercise_details, check_class_safety],
     automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-    thinking_config=types.ThinkingConfig(thinking_level="MINIMAL"),
+    thinking_config=types.ThinkingConfig(thinking_level="LOW"),
 )
 
 TOOLS = {
