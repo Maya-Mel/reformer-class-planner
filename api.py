@@ -32,5 +32,9 @@ def build_class(class_request: ClassRequest):
     if class_request.focus_areas:
         request += f" Focus on these areas: {', '.join(class_request.focus_areas)}."
 
-    lesson = run_agent(request)
+    try:
+        lesson = run_agent(request)
+    except Exception as e:
+        print(f"Agent failed: {e}")
+        raise HTTPException(status_code=503, detail="שירות ה-AI לא זמין כרגע. נסי שוב בעוד כמה דקות.")
     return {"lesson": lesson}

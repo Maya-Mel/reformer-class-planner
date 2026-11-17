@@ -28,3 +28,12 @@ def test_valid_request_sends_fields_to_agent(monkeypatch):
     assert response.status_code == 200
     assert "pregnancy" in response.json()["lesson"]
     assert "glutes" in response.json()["lesson"]
+
+def test_agent_failure_returns_clear_error(monkeypatch):
+    def failing_run_agent(request):
+        raise Exception("All models are busy right now. Please try again later.")
+
+    monkeypatch.setattr("api.run_agent", failing_run_agent)
+    response = client.post("/class", json={"level": "beginner"})
+    assert response.status_code == 503
+    assert response.json()["detail"] == "שירות ה-AI לא זמין כרגע. נסי שוב בעוד כמה דקות."
