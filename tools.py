@@ -1,6 +1,8 @@
 import json
+from pathlib import Path
 
-with open("data/exercises.json", encoding="utf-8") as file:
+DATA_FILE = Path(__file__).parent / "data" / "exercises.json"
+with open(DATA_FILE, encoding="utf-8") as file:
     exercises = json.load(file)
 
 KNOWN_CONDITIONS = [
