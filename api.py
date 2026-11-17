@@ -3,6 +3,9 @@ from tools import KNOWN_LEVELS, validate_conditions
 from pydantic import BaseModel
 from agent import run_agent
 from fastapi.responses import FileResponse
+from pathlib import Path
+
+PAGE_FILE = Path(__file__).parent / "static" / "index.html"
 
 app = FastAPI()
 
@@ -13,7 +16,7 @@ class ClassRequest(BaseModel):
 
 @app.get("/")
 def home():
-    return FileResponse("static/index.html")
+    return FileResponse(PAGE_FILE)
 
 @app.post("/class")
 def build_class(class_request: ClassRequest):

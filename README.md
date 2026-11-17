@@ -101,7 +101,7 @@ Run the agent:
 python agent.py
 ```
 
-Run the tests. They check the tools and the exercise data, and they don't need an API key:
+Run the tests. They check the tools, the API and the exercise data. They don't send any requests to Gemini, but a `GEMINI_API_KEY` must still be set (any value works), because loading the API creates the Gemini client:
 
 ```bash
 python -m pytest

@@ -19,6 +19,7 @@ pip install -r requirements.txt
 You need a `.env` file in the repo root that contains `GEMINI_API_KEY=...`. It is loaded by `ai_client.py` through python-dotenv.
 
 - `python agent.py`: runs the agent on the sample request in its `__main__` block.
+- `uvicorn api:app --reload`: starts the web server. The page is at `http://127.0.0.1:8000`, and `--reload` restarts the server when a file changes.
 - `python ai_client.py`: a smoke test of the Gemini client.
 - `python check_models.py`: shows which Gemini models currently respond. It sends real requests to Gemini. It is a manual check, and its name doesn't start with `test_` so that pytest doesn't collect it.
 - `python planner.py`: runs the older pipeline version. Its AI call is commented out.
@@ -28,9 +29,9 @@ Tests use pytest and live in `tests/`. Run them from the repo root with the venv
 - `python -m pytest`: runs all the tests.
 - `python -m pytest tests/test_tools.py::test_exercise_ids_are_unique`: runs a single test.
 
-The tests don't call Gemini. `tests/test_tools.py` tests the tools and also checks `data/exercises.json`. The approved contraindication vocabulary is `KNOWN_CONDITIONS`, and it now appears in two places: in `tools.py`, where the tools use it to reject unknown conditions, and as a separate copy in `tests/test_tools.py`, where it checks the data. The two copies are kept on purpose, and a test checks that they are identical. When a new condition is added to the data, add it to both lists, or the tests fail or the tools reject the condition.
+The tests don't call Gemini. `tests/test_tools.py` tests the tools and also checks `data/exercises.json`. `tests/test_api.py` tests the routes and replaces `run_agent` with a fake function through `monkeypatch`. Importing `api` still creates the Gemini client in `ai_client.py`, so `GEMINI_API_KEY` must be set (any value works) even though no request is sent. The approved contraindication vocabulary is `KNOWN_CONDITIONS`, and it now appears in two places: in `tools.py`, where the tools use it to reject unknown conditions, and as a separate copy in `tests/test_tools.py`, where it checks the data. The two copies are kept on purpose, and a test checks that they are identical. When a new condition is added to the data, add it to both lists, or the tests fail or the tools reject the condition.
 
-There is no linter or build step. Run every script and the tests from the repo root, because `tools.py` opens `data/exercises.json` with a relative path.
+There is no linter or build step. `tools.py` and `api.py` build their file paths from their own location (`DATA_FILE` for `data/exercises.json`, `PAGE_FILE` for `static/index.html`), so they work from any folder. Keep using this pattern for new file paths. Still run the tests from the repo root: `python -m pytest` adds the current folder to the import path, which is how `tests/` can import `tools` and `api` (plain `pytest` fails with `ModuleNotFoundError`). Run `uvicorn api:app` from the repo root too, because uvicorn looks for `api.py` in the current folder.
 
 ## Architecture
 
@@ -48,6 +49,10 @@ If a tool raises `ValueError`, the loop doesn't crash. It prints the error and s
 The loop stops when the reply has no function calls, or after `MAX_STEPS` (10) steps. A new tool must be added in three places: the import, `config.tools` and the `TOOLS` dict. `SYSTEM_INSTRUCTION` holds the class rules and the safety rules. These include a mandatory `check_class_safety` call before the final answer, a minimum number of exercises per muscle group (checked against `body_focus`), exercise names in English, and cues in natural Hebrew.
 
 **AI client (`ai_client.py`).** It holds one shared `genai.Client` with a 120-second timeout and SDK retries turned off. `generate_with_fallback` tries each model in `MODELS` in order and moves to the next one only on `errors.ServerError` (503/504 errors on the free tier). Other errors, such as an invalid API key, are raised on purpose. Every model call should go through this function.
+
+**Web API (`api.py`) and page (`static/index.html`).** A FastAPI app with two routes. `GET /` returns the page. `POST /class` takes `level`, `conditions` and `focus_areas`. It rejects an unknown level or condition with 400 before any model call, builds a plain-English request sentence, and passes it to `run_agent`. If the agent raises any exception, it returns 503 with a Hebrew message. `focus_areas` is not validated and the tools don't use it; it only goes into the sentence for the model.
+
+The page is a single HTML file with inline CSS and JavaScript and no libraries. Its radio and checkbox values are a third copy of `KNOWN_LEVELS`, `KNOWN_CONDITIONS` and the `body_focus` values in the data, and no test checks that they match. `showLesson` builds the lesson from the model's Markdown with `textContent`, never `innerHTML`. It keeps the exercise numbers counting across blank lines, puts indented `*` lines inside the exercise above them, and removes the number from the start of headings.
 
 **`planner.py`** is the older pipeline. Code filters the exercises and passes them to a single prompt, with no tools involved. It is kept so the two approaches can be compared, and it is not used by the agent.
 
