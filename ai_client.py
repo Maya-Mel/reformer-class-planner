@@ -24,6 +24,12 @@ def generate_with_fallback(contents, config):
             )
         except errors.ServerError as error:
             print(f"{model} is busy ({error.code}), trying the next model...")
+        except errors.ClientError as error:
+            if error.code == 429:
+                print(f"{model} is out of quota (429), trying the next model...")
+            else:
+                raise
+
 
     raise RuntimeError("All models are busy right now. Please try again later.")
 
