@@ -148,28 +148,15 @@
         <fieldset>
             <legend>אזורי גוף <span class="hint">(אפשר לבחור כמה)</span></legend>
             <div class="options">
-                <label><input type="checkbox" name="focus_areas" value="core"> ליבה</label>
-                <label><input type="checkbox" name="focus_areas" value="obliques"> אלכסוניים</label>
+                <!-- Each option sends one or more body_focus values from the data, separated by commas. -->
                 <label><input type="checkbox" name="focus_areas" value="glutes"> ישבן</label>
-                <label><input type="checkbox" name="focus_areas" value="legs"> רגליים</label>
-                <label><input type="checkbox" name="focus_areas" value="hamstrings"> ירך אחורית</label>
+                <label><input type="checkbox" name="focus_areas" value="legs,hamstrings,calves"> רגליים</label>
                 <label><input type="checkbox" name="focus_areas" value="inner_thighs"> ירך פנימית</label>
-                <label><input type="checkbox" name="focus_areas" value="hip_flexors"> מכופפי ירך</label>
-                <label><input type="checkbox" name="focus_areas" value="calves"> שוקיים</label>
-                <label><input type="checkbox" name="focus_areas" value="arms"> ידיים</label>
-                <label><input type="checkbox" name="focus_areas" value="biceps"> יד קדמית (בייספס)</label>
-                <label><input type="checkbox" name="focus_areas" value="triceps"> יד אחורית (טרייספס)</label>
+                <label><input type="checkbox" name="focus_areas" value="arms,biceps,triceps"> ידיים</label>
                 <label><input type="checkbox" name="focus_areas" value="shoulders"> כתפיים</label>
-                <label><input type="checkbox" name="focus_areas" value="rotator_cuff"> מסובבי הכתף</label>
-                <label><input type="checkbox" name="focus_areas" value="chest"> חזה</label>
                 <label><input type="checkbox" name="focus_areas" value="back"> גב</label>
-                <label><input type="checkbox" name="focus_areas" value="posture"> יציבה</label>
-                <label><input type="checkbox" name="focus_areas" value="spine_mobility"> גמישות עמוד השדרה</label>
-                <label><input type="checkbox" name="focus_areas" value="spine_extension"> פשיטת עמוד השדרה</label>
-                <label><input type="checkbox" name="focus_areas" value="side_body"> צד הגוף</label>
-                <label><input type="checkbox" name="focus_areas" value="hip_mobility"> גמישות מפרק הירך</label>
-                <label><input type="checkbox" name="focus_areas" value="pelvic_stability"> יציבות האגן</label>
-                <label><input type="checkbox" name="focus_areas" value="balance"> שיווי משקל</label>
+                <label><input type="checkbox" name="focus_areas" value="core,obliques"> בטן</label>
+                <label><input type="checkbox" name="focus_areas" value="chest"> חזה</label>
             </div>
         </fieldset>
 
@@ -192,6 +179,12 @@
     function checkedValues(name) {
         const boxes = form.querySelectorAll(`input[name="${name}"]:checked`);
         return Array.from(boxes, box => box.value);
+    }
+
+    // Collect the body_focus values of the checked areas.
+    // One option can stand for several values, written like "core,obliques".
+    function focusValues() {
+        return checkedValues("focus_areas").flatMap(value => value.split(","));
     }
 
     // Turn FastAPI's error answer into one readable message.
@@ -322,7 +315,7 @@
         const body = {
             level: form.querySelector('input[name="level"]:checked').value,
             conditions: checkedValues("conditions"),
-            focus_areas: checkedValues("focus_areas"),
+            focus_areas: focusValues(),
         };
 
         button.disabled = true;
