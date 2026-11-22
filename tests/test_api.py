@@ -37,3 +37,17 @@ def test_agent_failure_returns_clear_error(monkeypatch):
     response = client.post("/class", json={"level": "beginner"})
     assert response.status_code == 503
     assert response.json()["detail"] == "שירות ה-AI לא זמין כרגע. נסי שוב בעוד כמה דקות."
+
+def test_request_without_focus_areas_has_no_focus_on(monkeypatch):
+    def fake_run_agent(request):
+        return f"FAKE CLASS FOR: {request}"
+
+    monkeypatch.setattr("api.run_agent", fake_run_agent)
+
+    response = client.post("/class", json={
+        "level": "beginner",
+        "conditions": ["pregnancy"],
+    })
+
+    assert response.status_code == 200
+    assert "Focus on these areas" not in response.json()["lesson"]
