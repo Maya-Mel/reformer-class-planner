@@ -1,5 +1,7 @@
 # Reformer Class Planner
 
+[![Tests](https://github.com/Maya-Mel/reformer-class-planner/actions/workflows/tests.yml/badge.svg)](https://github.com/Maya-Mel/reformer-class-planner/actions/workflows/tests.yml)
+
 An AI agent that helps Pilates instructors plan safe reformer classes.
 
 I'm a Pilates reformer instructor and a Computer Science graduate. I built this tool for situations I run into as an instructor:
