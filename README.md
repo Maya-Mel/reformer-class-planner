@@ -60,6 +60,25 @@ The model never decides on its own what is safe:
 | `get_exercise_details(exercise_id)` | Returns the full details of one exercise |
 | `check_class_safety(exercise_ids, conditions)` | Returns a list of problems. An empty list means the class is safe |
 
+## Using the tools from Claude Code (MCP)
+
+`mcp_server.py` is an MCP server that exposes the same three tools to MCP clients such as Claude Code. This way you can ask Claude directly, for example "Is the Hundred safe for a pregnant client?", and Claude calls `check_class_safety`. The server only wraps the functions from `tools.py`. The safety logic and the data stay the same, and no Gemini request is sent.
+
+The server is connected through `.mcp.json` in the project folder:
+
+```json
+{
+  "mcpServers": {
+    "reformer-class-planner": {
+      "command": ".venv/Scripts/python.exe",
+      "args": ["mcp_server.py"]
+    }
+  }
+}
+```
+
+When you open the project in Claude Code, it reads this file, asks you to approve the server, and starts it in the background with the project's venv. The path `.venv/Scripts/python.exe` is for Windows. On macOS/Linux, change it to `.venv/bin/python`.
+
 ## Reliability
 
 The free Gemini tier is sometimes overloaded (503 / 504 errors), so the AI client:
@@ -77,6 +96,8 @@ agent.py              The agent loop with function calling and system instructio
 ai_client.py          Gemini client with timeout and model fallback
 planner.py            A simple pipeline version (code filters exercises, AI writes the class), kept for comparison
 check_models.py       Checks which Gemini models are currently available
+mcp_server.py         MCP server that exposes the tools to Claude Code
+.mcp.json             Connects the MCP server to Claude Code
 ```
 
 ## Running it
@@ -107,6 +128,12 @@ Run the tests. They check the tools, the API and the exercise data. They don't s
 
 ```bash
 python -m pytest
+```
+
+To run only the MCP server tests (they don't need `GEMINI_API_KEY`):
+
+```bash
+python -m pytest tests/test_mcp_server.py
 ```
 
 ## Tech stack
