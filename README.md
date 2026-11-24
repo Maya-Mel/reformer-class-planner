@@ -98,6 +98,8 @@ planner.py            A simple pipeline version (code filters exercises, AI writ
 check_models.py       Checks which Gemini models are currently available
 mcp_server.py         MCP server that exposes the tools to Claude Code
 .mcp.json             Connects the MCP server to Claude Code
+Dockerfile            Builds an image that runs the web app with uvicorn
+.dockerignore         Keeps .env, .venv and .git out of the image
 ```
 
 ## Running it
@@ -136,6 +138,22 @@ To run only the MCP server tests (they don't need `GEMINI_API_KEY`):
 python -m pytest tests/test_mcp_server.py
 ```
 
+## Running with Docker
+
+You can also run the web app in a Docker container. Build the image once (and again after every code change):
+
+```bash
+docker build -t reformer-class-planner .
+```
+
+Run it and open `http://127.0.0.1:8000`:
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env reformer-class-planner
+```
+
+The API key is never part of the image. `.dockerignore` keeps `.env` (and `.venv`, `.git`) out of the build, and `--env-file .env` passes the key to the container only while it runs. Write the key in `.env` without quotes (`GEMINI_API_KEY=your_key_here`), because `--env-file` keeps quotes as part of the value.
+
 ## Tech stack
 
 Python, Google Gemini API (`google-genai`), function calling, python-dotenv, pytest, Git and GitHub.
@@ -147,6 +165,7 @@ Python, Google Gemini API (`google-genai`), function calling, python-dotenv, pyt
 - [x] AI agent with function calling
 - [ ] Improve the data (see [Issues](https://github.com/Maya-Mel/reformer-class-planner/issues))
 - [ ] Classes with props: ball, ankle and hand weights, foam roller, magic circle, box
-- [ ] Web API with FastAPI
-- [ ] A web form for instructors: choose the class level, focus areas (glutes, core, arms, legs, back and more), props and contraindications, and get a class plan
-- [ ] Docker and deployment to AWS
+- [x] Web API with FastAPI
+- [x] A web form for instructors: choose the class level, focus areas (glutes, core, arms, legs, back and more) and contraindications, and get a class plan
+- [x] Docker
+- [ ] Deployment to the cloud

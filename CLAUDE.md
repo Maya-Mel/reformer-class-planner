@@ -21,6 +21,7 @@ You need a `.env` file in the repo root that contains `GEMINI_API_KEY=...`. It i
 - `python agent.py`: runs the agent on the sample request in its `__main__` block.
 - `uvicorn api:app --reload`: starts the web server. The page is at `http://127.0.0.1:8000`, and `--reload` restarts the server when a file changes.
 - `python mcp_server.py`: starts the MCP server over stdio. You don't normally run it by hand, because Claude Code starts it through `.mcp.json`.
+- `docker build -t reformer-class-planner .` and then `docker run --rm -p 8000:8000 --env-file .env reformer-class-planner`: build and run the web app in a container. Rebuild after every code change, because the code is copied into the image at build time.
 - `python ai_client.py`: a smoke test of the Gemini client.
 - `python check_models.py`: shows which Gemini models currently respond. It sends real requests to Gemini. It is a manual check, and its name doesn't start with `test_` so that pytest doesn't collect it.
 - `python planner.py`: runs the older pipeline version. Its AI call is commented out.
@@ -55,6 +56,8 @@ The loop stops when the reply has no function calls, or after `MAX_STEPS` (10) s
 
 **MCP server (`mcp_server.py`, `.mcp.json`).** It wraps the three functions from `tools.py` with `MCPServer` and `add_tool`, so MCP clients such as Claude Code can call them directly, without Gemini. Like Gemini, the MCP server builds each tool's schema from the type hints and docstring. `.mcp.json` in the repo root registers the server for Claude Code: it runs `.venv/Scripts/python.exe mcp_server.py` from the repo root, so the venv must exist and have the `mcp` package installed. The path is Windows-only. A new tool must also be registered here with `mcp.add_tool`, so a new tool now goes in four places: the import, `config.tools` and the `TOOLS` dict in `agent.py`, and `mcp_server.py`.
 
+**Docker (`Dockerfile`, `.dockerignore`).** The image is based on `python:3.13-slim`. It installs `requirements.txt` first, so the dependencies layer is cached while only code changes, then copies the repo and runs `uvicorn api:app --host 0.0.0.0 --port 8000`. `--host 0.0.0.0` is needed so the port can be reached from outside the container. The image runs only the web app, not the agent's `__main__` or the MCP server. `.dockerignore` excludes `.env`, `.venv`, `.git`, `__pycache__` and `.pytest_cache`. The API key must never be in the image: it is passed only at run time with `--env-file .env`. Inside the container there is no `.env` file, so `load_dotenv` in `ai_client.py` finds nothing and the key comes from the environment variable. `--env-file` doesn't strip quotes, so `.env` must hold the key without quotes. Never add `.env` to the image or put the key in an `ENV` line in the Dockerfile.
+
 The page is a single HTML file with inline CSS and JavaScript and no libraries. Its radio and checkbox values are a third copy of `KNOWN_LEVELS` and `KNOWN_CONDITIONS`, and no test checks that they match. The body-area checkboxes are 8 Hebrew groups instead of the raw `body_focus` values. Each checkbox's `value` holds one or more `body_focus` values separated by commas (for example `core,obliques`), and `focusValues` splits them before sending. Some `body_focus` values have no checkbox (for example `balance` and `spine_mobility`). `showLesson` builds the lesson from the model's Markdown with `textContent`, never `innerHTML`. It keeps the exercise numbers counting across blank lines, puts indented `*` lines inside the exercise above them, and removes the number from the start of headings.
 
 **`planner.py`** is the older pipeline. Code filters the exercises and passes them to a single prompt, with no tools involved. It is kept so the two approaches can be compared, and it is not used by the agent.
@@ -63,4 +66,4 @@ The page is a single HTML file with inline CSS and JavaScript and no libraries. 
 - I'm learning. Explain every change in simple terms before making it, and ask before editing files.
 - Never change contraindications in data/exercises.json without asking me. I'm the Pilates instructor, and safety data is my decision.
 - Every tool in tools.py must keep its type hints and docstring, because the agent reads them.
-- Never commit the .env file or any API key.
+- Never commit the .env file or any API key, and never put the key in the Docker image.
